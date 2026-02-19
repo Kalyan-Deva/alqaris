@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Alaris 8015 Security Research | Northeastern University</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --charcoal: #2B2B2B;
+            --amber: #E8943A;
+            --amber-light: #F4B96A;
+            --off-white: #F5F0E8;
+            --sand: #D4C4A8;
+            --red: #D94F3D;
+            --red-dark: #B83A2A;
+            --purple: #7C6FA0;
+            --green: #5BA05A;
+            --blue: #5B8DB8;
+            --cream: #EBE5D9;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--charcoal);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            transition: box-shadow 0.3s ease;
+        }
+
+        nav.scrolled {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: var(--off-white);
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--sand);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--amber);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--amber);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Sections General */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .section-subtitle {
+            color: var(--sand);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--charcoal);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero h1 {
+            color: var(--off-white);
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+
+        .hero-subtitle {
+            color: var(--sand);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-amber {
+            background: var(--amber);
+            color: var(--charcoal);
+        }
+
+        .badge-warning {
+            background: transparent;
+            color: var(--red);
+            border: 2px solid var(--red);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                border-color: var(--red);
+                box-shadow: 0 0 0 0 rgba(217, 79, 61, 0.4);
+            }
+            50% { 
+                border-color: #ff6b5a;
+                box-shadow: 0 0 0 10px rgba(217, 79, 61, 0);
+            }
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--amber);
+            color: var(--charcoal);
+        }
+
+        .btn-primary:hover {
+            background: var(--amber-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(232, 148, 58, 0.3);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--amber);
+            color: var(--amber);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--amber);
+            color: var(--charcoal);
+        }
+
+        /* Light Sections */
+        .light-section {
+            background: var(--off-white);
+            color: var(--charcoal);
+        }
+
+        .light-section .section-title {
+            color: var(--charcoal);
+        }
+
+        /* Dark Sections */
+        .dark-section {
+            background: var(--charcoal);
+            color: var(--off-white);
+        }
+
+        .dark-section .section-title {
+            color: var(--off-white);
+        }
+
+        /* Device Overview */
+        .device-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .device-card {
+            background: white;
+            border-left: 4px solid var(--amber);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .device-image-placeholder {
+            background: #e0e0e0;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .device-card h3 {
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .device-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: var(--amber);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .spec-value {
+            color: var(--charcoal);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Vulnerabilities Section */
+        .vuln-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .vuln-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            border-left: 4px solid var(--amber);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .vuln-card.dark {
+            border-left-color: #c47a2d;
+        }
+
+        .vuln-header {
+            padding: 1.5rem;
+            background: var(--amber);
+            color: var(--charcoal);
+        }
+
+        .vuln-card.dark .vuln-header {
+            background: #c47a2d;
+            color: white;
+        }
+
+        .vuln-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .vuln-id {
+            font-weight: 700;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .vuln-content {
+            padding: 2rem;
+        }
+
+        .vuln-content h4 {
+            color: var(--amber-light);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .vuln-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .vuln-content li {
+            color: var(--sand);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .vuln-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--amber);
+            font-weight: bold;
+        }
+
+        /* Attack Surface Diagram */
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 3rem 0;
+            position: relative;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .flow-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .flow-box.amber {
+            background: var(--amber);
+            color: var(--charcoal);
+        }
+
+        .flow-box.amber-dark {
+            background: #c47a2d;
+            color: white;
+        }
+
+        .flow-box.red {
+            background: var(--red);
+            color: white;
+        }
+
+        .flow-box.red-dark {
+            background: var(--red-dark);
+            color: white;
+        }
+
+        .flow-arrow {
+            width: 40px;
+            height: 2px;
+            background: var(--charcoal);
+            position: relative;
+            margin: 0 -10px;
+        }
+
+        .flow-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid var(--charcoal);
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 2rem;
+            border-left: 4px solid var(--amber);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .info-card h4 {
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-card .tag {
+            display: inline-block;
+            background: var(--charcoal);
+            color: var(--amber);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Methodology */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .phase-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            border-left: 4px solid var(--amber);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .phase-card.dark {
+            border-left-color: #c47a2d;
+        }
+
+        .phase-card.red {
+            border-left-color: var(--red);
+        }
+
+        .phase-header {
+            padding: 1.5rem;
+            background: var(--amber);
+            color: var(--charcoal);
+        }
+
+        .phase-card.dark .phase-header {
+            background: #c47a2d;
+            color: white;
+        }
+
+        .phase-card.red .phase-header {
+            background: var(--red);
+            color: white;
+        }
+
+        .phase-header h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .phase-num {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .phase-content {
+            padding: 2rem;
+        }
+
+        .phase-content ul {
+            list-style: none;
+        }
+
+        .phase-content li {
+            color: var(--sand);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .phase-content li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--amber);
+            font-weight: bold;
+        }
+
+        /* Budget Table */
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-top: 2rem;
+        }
+
+        .budget-table th {
+            background: var(--charcoal);
+            color: var(--amber);
+            padding: 1.2rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .budget-table td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid #eee;
+            color: #444;
+        }
+
+        .budget-table tr:nth-child(even) {
+            background: var(--cream);
+        }
+
+        .budget-table tr:hover {
+            background: rgba(232, 148, 58, 0.1);
+        }
+
+        .budget-table .total-row {
+            background: var(--charcoal) !important;
+            color: white;
+            font-weight: 700;
+        }
+
+        .budget-table .total-row td {
+            color: white;
+            border-bottom: none;
+        }
+
+        /* Success Criteria */
+        .success-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .success-card {
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--amber);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .success-card.amber { border-left-color: var(--amber); }
+        .success-card.dark-amber { border-left-color: #c47a2d; }
+        .success-card.red { border-left-color: var(--red); }
+        .success-card.purple { border-left-color: var(--purple); }
+        .success-card.green { border-left-color: var(--green); }
+        .success-card.blue { border-left-color: var(--blue); }
+
+        .check-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .success-card.amber .check-circle { background: var(--amber); color: var(--charcoal); }
+        .success-card.dark-amber .check-circle { background: #c47a2d; color: white; }
+        .success-card.red .check-circle { background: var(--red); color: white; }
+        .success-card.purple .check-circle { background: var(--purple); color: white; }
+        .success-card.green .check-circle { background: var(--green); color: white; }
+        .success-card.blue .check-circle { background: var(--blue); color: white; }
+
+        .success-card h4 {
+            color: var(--off-white);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .success-card p {
+            color: var(--sand);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--charcoal);
+            border-top: 4px solid var(--amber);
+            padding: 3rem 2rem;
+            color: var(--sand);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-left {
+            font-weight: 600;
+            color: var(--off-white);
+        }
+
+        .footer-center {
+            text-align: center;
+        }
+
+        .footer-right {
+            font-family: monospace;
+            color: var(--amber);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .device-grid,
+            .vuln-grid,
+            .method-grid,
+            .success-grid,
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: -10px 0;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">BD Alaris 8015 | Security Research</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#vulnerabilities">Vulnerabilities</a></li>
+                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#budget">Budget</a></li>
+                <li><a href="#team">Team</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero dark-section" id="overview">
+        <div class="hero-content">
+            <h1>BD Alaris 8015 Infusion Pump Security Analysis</h1>
+            <p class="hero-subtitle">Medical Device Cybersecurity · Spring 2025 · Northeastern University</p>
+
+            <div class="badge-container">
+                <span class="badge badge-amber">CVE-2016-8375</span>
+                <span class="badge badge-amber">CVE-2016-9355</span>
+                <span class="badge badge-amber">BD Alaris 8015 PC</span>
+                <span class="badge badge-warning">⚠ No Vendor Patch Available</span>
+            </div>
+
+            <div class="cta-container">
+                <a href="#vulnerabilities" class="btn btn-primary">View Vulnerabilities</a>
+                <a href="#budget" class="btn btn-outline">See Budget</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Device Overview Section -->
+    <section class="light-section" id="device">
+        <h2 class="section-title">The Device</h2>
+        <div class="device-grid">
+            <div class="device-card">
+                <div class="device-image-container">
+                    <img src="./device-photo.jpg" 
+                         alt="BD Alaris 8015 PC Unit with 2 8100 Modules" 
+                         style="width: 100%; height: auto; border-radius: 8px; display: block;">
+                    <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; text-align: center;">BD Alaris 8015 PC Unit with 2 8100 Modules</p>
+                </div>
+                <h3>BD Alaris 8015 PC Unit</h3>
+                <p>Wi-Fi connected IV infusion pump used in hospital ICUs for controlled medication delivery. Manufactured by Becton, Dickinson and Company.</p>
+            </div>
+
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <span class="spec-label">Model</span>
+                    <span class="spec-value">Alaris 8015 PC Unit</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Manufacturer</span>
+                    <span class="spec-value">Becton, Dickinson and Company</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Device Type</span>
+                    <span class="spec-value">IV Infusion Pump</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Clinical Setting</span>
+                    <span class="spec-value">ICU / Hospital Ward</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Connectivity</span>
+                    <span class="spec-value">802.11 Wi-Fi (b/g)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">External Interface</span>
+                    <span class="spec-value">CompactFlash (CF) Slot</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Internal Storage</span>
+                    <span class="spec-value">Removable Flash Memory</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Firmware Affected</span>
+                    <span class="spec-value">v9.5 and prior, v9.7</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">End-of-Life</span>
+                    <span class="spec-value">Versions below v9.19</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">CVE Severity</span>
+                    <span class="spec-value">CVSS 4.2 — Medium</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Vendor Patch</span>
+                    <span class="spec-value">None (BD Advisory)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Reference</span>
+                    <span class="spec-value">NHS England CC-3795</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vulnerabilities Section -->
+    <section class="dark-section" id="vulnerabilities">
+        <h2 class="section-title">Vulnerability Deep Dive</h2>
+        <p class="section-subtitle">Two unpatched attack vectors enabling unauthorized network access through physical device compromise.</p>
+
+        <div class="vuln-grid">
+            <div class="vuln-card">
+                <div class="vuln-header">
+                    <div class="vuln-id">CVE-2016-8375</div>
+                    <h3>Wi-Fi Card Replacement Attack</h3>
+                </div>
+                <div class="vuln-content">
+                    <h4>Affected: Version 9.7 and 8000 PC unit</h4>
+                    <ul>
+                        <li>Attacker swaps the external CompactFlash Wi-Fi card with a malicious logging card — no special tools needed</li>
+                        <li>Device writes unencrypted Wi-Fi credentials (SSID + PSK) to flash storage accessible via the CF interface</li>
+                        <li>Extracted credentials allow the attacker to authenticate to hospital Wi-Fi (MedNet) and pivot to clinical systems</li>
+                        <li>Attack requires physical access; performing it in a clinical setting increases detection probability</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="vuln-card dark">
+                <div class="vuln-header">
+                    <div class="vuln-id">CVE-2016-9355</div>
+                    <h3>Internal Flash Memory Extraction</h3>
+                </div>
+                <div class="vuln-content">
+                    <h4>Affected: Version 9.5 and prior</h4>
+                    <ul>
+                        <li>Attacker physically disassembles the Alaris 8015 to access the internal removable flash memory module</li>
+                        <li>Older firmware (≤9.5) stores Wi-Fi credentials and sensitive data on removable flash — no encryption</li>
+                        <li>Removable format enables extraction away from the facility, eliminating detection risk</li>
+                        <li>Standard flash readers (CH341A) read memory directly; credentials stored in plaintext</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Attack Surface Diagram Section -->
+    <section class="light-section" id="attack-surface">
+        <h2 class="section-title">Physical Attack Surface</h2>
+
+        <div class="flow-diagram">
+            <div class="flow-box amber">Physical Access to Device</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-box amber-dark">CF Card Swap / Flash Removal</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-box red">Credential Extraction (Plaintext)</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-box red-dark">Hospital Network Pivot</div>
+        </div>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h4>CF Card Slot</h4>
+                <span class="tag">CVE-2016-8375</span>
+                <p>Swap external Wi-Fi CompactFlash card to capture unencrypted SSID/PSK</p>
+            </div>
+            <div class="info-card">
+                <h4>Internal Flash</h4>
+                <span class="tag">CVE-2016-9355</span>
+                <p>Disassemble unit, remove flash, extract credentials off-site undetected</p>
+            </div>
+            <div class="info-card">
+                <h4>No Patch Path</h4>
+                <span class="tag">BD Advisory</span>
+                <p>BD will not release a fix — only operational mitigations exist</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology Section -->
+    <section class="dark-section" id="methodology">
+        <h2 class="section-title">Our Methodology</h2>
+        <p class="section-subtitle">Three-phase structured approach to vulnerability reproduction and impact analysis.</p>
+
+        <div class="method-grid">
+            <div class="phase-card">
+                <div class="phase-header">
+                    <div class="phase-num">Phase 1</div>
+                    <h3>Hardware Acquisition & Recon</h3>
+                </div>
+                <div class="phase-content">
+                    <ul>
+                        <li>Source BD Alaris 8015 unit from secondary market</li>
+                        <li>Identify CF slot location and accessibility</li>
+                        <li>Document external ports and interfaces</li>
+                        <li>Map physical security controls</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="phase-card dark">
+                <div class="phase-header">
+                    <div class="phase-num">Phase 2</div>
+                    <h3>Vulnerability Reproduction</h3>
+                </div>
+                <div class="phase-content">
+                    <ul>
+                        <li>Swap CF card with proxy logging device</li>
+                        <li>Disassemble unit to access internal flash</li>
+                        <li>Use binwalk + HxD for memory analysis</li>
+                        <li>Extract and document plaintext credentials</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="phase-card red">
+                <div class="phase-header">
+                    <div class="phase-num">Phase 3</div>
+                    <h3>Impact & Defense Analysis</h3>
+                </div>
+                <div class="phase-content">
+                    <ul>
+                        <li>Simulate VLAN pivot using extracted creds</li>
+                        <li>Assess clinical network access scope</li>
+                        <li>Propose operational and technical defenses</li>
+                        <li>Compile findings into final report</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Budget Section -->
+    <section class="light-section" id="budget">
+        <h2 class="section-title">Budget & Equipment</h2>
+        <p class="section-subtitle">Amazon and eBay links to be included — instructor selects faster delivery.</p>
+
+        <table class="budget-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Amazon ($)</th>
+                    <th>eBay ($)</th>
+                    <th>Est. Cost</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>BD Alaris 8015 PC Unit (used)</strong></td>
+                    <td>—</td>
+                    <td><a href="https://ebay.us/m/OtgrDV" target="_blank" style="color: var(--amber); text-decoration: underline; font-weight: 600;">$200 (eBay Link)</a></td>
+                    <td><strong>~$227</strong> (incl. shipping)</td>
+                    <td>Core test device</td>
+                </tr>
+                <tr>
+                    <td><strong>CompactFlash Card (proxy logging)</strong></td>
+                    <td>$8–$15</td>
+                    <td>$5–$12</td>
+                    <td>~$12</td>
+                    <td>CVE-8375 demo</td>
+                </tr>
+                <tr>
+                    <td><strong>Flash Memory Reader (CH341A)</strong></td>
+                    <td>$20–$40</td>
+                    <td>$15–$30</td>
+                    <td>~$25</td>
+                    <td>Memory extraction</td>
+                </tr>
+                <tr>
+                    <td><strong>Multimeter + Probe Kit</strong></td>
+                    <td>$18–$35</td>
+                    <td>$12–$25</td>
+                    <td>~$25</td>
+                    <td>Hardware analysis</td>
+                </tr>
+                <tr>
+                    <td><strong>USB Wi-Fi Adapter 802.11 b/g/n</strong></td>
+                    <td>$10–$20</td>
+                    <td>$8–$15</td>
+                    <td>~$12</td>
+                    <td>Network testing</td>
+                </tr>
+                <tr>
+                    <td><strong>Misc. cables, tools, enclosures</strong></td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>~$25</td>
+                    <td>Lab consumables</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3"><strong>Estimated Total</strong></td>
+                    <td colspan="2"><strong>~$326</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Success Criteria Section -->
+    <section class="dark-section" id="success">
+        <h2 class="section-title">What Does Success Look Like?</h2>
+
+        <div class="success-grid">
+            <div class="success-card amber">
+                <div class="check-circle">✓</div>
+                <h4>CVE Reproduction</h4>
+                <p>Demonstrate both CVEs on physical or emulated hardware with documented evidence</p>
+            </div>
+
+            <div class="success-card dark-amber">
+                <div class="check-circle">✓</div>
+                <h4>Credential Extraction</h4>
+                <p>Capture plaintext Wi-Fi SSID and PSK from flash with forensic photos</p>
+            </div>
+
+            <div class="success-card red">
+                <div class="check-circle">✓</div>
+                <h4>Network Impact Demo</h4>
+                <p>Show full attack path from credential extraction to unauthorized VLAN access in lab</p>
+            </div>
+
+            <div class="success-card purple">
+                <div class="check-circle">✓</div>
+                <h4>Defense Gap Analysis</h4>
+                <p>Evaluate BD's mitigations, assess what works and what doesn't</p>
+            </div>
+
+            <div class="success-card green">
+                <div class="check-circle">✓</div>
+                <h4>Technical Improvements</h4>
+                <p>Propose 3+ concrete defenses (encrypted flash, secure boot, rotation)</p>
+            </div>
+
+            <div class="success-card blue">
+                <div class="check-circle">✓</div>
+                <h4>Final Deliverable</h4>
+                <p>Polished report + demo video + slides, reproducible by another group</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section (placeholder for nav link) -->
+    <section class="light-section" id="team">
+        <h2 class="section-title">Research Team</h2>
+        <p style="color: #666; margin-top: 1rem;">Northeastern University Medical Device Cybersecurity Course<br>Spring 2025</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                BD Alaris 8015 · Security Research Proposal
+            </div>
+            <div class="footer-center">
+                Medical Device Cybersecurity · Spring 2025 · Northeastern University
+            </div>
+            <div class="footer-right">
+                CVE-2016-8375 · CVE-2016-9355
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sticky navbar shadow on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
